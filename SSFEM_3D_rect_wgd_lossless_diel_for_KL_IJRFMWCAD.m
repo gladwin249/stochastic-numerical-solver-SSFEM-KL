@@ -6,14 +6,9 @@
 % variations in the dielectric.
 %
 % Written by Gladwin Jos
-%
-% Date : 12/06/2018
-% Date : 24/06/2018
-% Date : 08/10/2018
-% Date : 27/09/2020
-% Date : 13/11/2020: Extended to 3D multilayer lossless dielectric
-% Date : 24/11/2020: The variations are modelled as RV
-% Date : 29/12/2021: Applied to dielectric block with KL
+% 
+% Date : 29/12/2021: Applied SSFEM to rectangular
+% waveguide with dielectric block with KL
 %                    for IJRFMWCAD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clc
