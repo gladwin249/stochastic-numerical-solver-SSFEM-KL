@@ -11,10 +11,16 @@
 % waveguide with dielectric block with KL
 %                    for IJRFMWCAD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Reference: 
+% Modelling of Spatial Permittivity Variations using Karhunen
+% Loève Expansion for Stochastic Electromagnetic Problems
+
 clc
 clear all;  % Clear all variables
 close all;  % Close all graphics 
 tic;
+% Loading the mesh file for the example in Figure 3
  mesh_file_name='3d_dielectric_brick_rectangular_waveguide_2_1_24_NE_coarser_Ne_2057.msh';
 [node_list one_node_point two_node_line three_node_triangle ...
     four_node_tetrahedron ]=parse_gmsh_file_3D(mesh_file_name);
@@ -40,7 +46,8 @@ end
 input_len=z_min;
 output_len=z_max;
 
-% defining dielectric dimension 
+% defining dielectric dimension inside the 
+% rectangular waveguide (Ref: Figure 3)
 b_value=1;
 diel_len=0.8;
 err=0.00001*b_value;
@@ -51,6 +58,8 @@ Y_top=(0.399*b_value)/100;
 Z_left=((2.4*b_value-diel_len*b_value)/2)/100;
 Z_right= Z_left+(diel_len*b_value)/100;
 
+% Generating the features of the tetrahedron finite element
+% Ref: [30], [31] of the reference paper
 Ne=length(four_node_tetrahedron) 
 tet_edge=[1 2;1 3;1 4;2 3;4 2;3 4];
 local_edge_array= edge_array_local_3D(four_node_tetrahedron,Ne,tet_edge);
