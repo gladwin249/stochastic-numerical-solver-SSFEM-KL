@@ -94,7 +94,7 @@ b=y_max-y_min;
 E0=1;
 width=a;
 height=b;
-freq=10*10^9;  
+freq=10*10^9;  % frequency of operation
 mu_0=4*pi*10^(-7); 
 epsilon_0=8.854187817*10^(-12);
 k0=2*pi*freq*sqrt(mu_0*epsilon_0); 
@@ -105,7 +105,8 @@ else
 end
 gamma_input=k_z_10*1i;
 mu_r=1+0*1i; 
-
+ 
+% eigenvalues and eigenvectors obtained as in Appendix B
 x_node_1=[X_left X_right];
 x_node_2=[Y_bottom Y_top];
 x_node_3=[Z_left Z_right];
@@ -116,7 +117,7 @@ corr_factor_1=corr_length_1*(2/(x_node_1(2)-x_node_1(1)));
 corr_factor_2=corr_length_2*(2/(x_node_2(2)-x_node_2(1)));
 corr_factor_3=corr_length_3*(2/(x_node_3(2)-x_node_3(1)));
 No_of_terms_KL=15;
-epsilon_r_dash_dielectric=4;
+epsilon_r_dash_dielectric=4; % mean value of permittivity
 epsilon_r_air=1;  
 std_dev_1=0.1*epsilon_r_dash_dielectric;
 std_dev_2=0.1*epsilon_r_dash_dielectric;
@@ -124,7 +125,8 @@ std_dev_3=0.1*epsilon_r_dash_dielectric;
 [eig_value_3D,eig_vector_3D]= ...
     get_eigen_value_eigen_vector_3D_analytical ...
     (std_dev_1,std_dev_2,std_dev_3,x_node_1,x_node_2,x_node_3,corr_factor_1,corr_factor_2,corr_factor_3,No_of_terms_KL,x_node_2(2)-x_node_2(1));
- 
+
+% Mean value of permittivity for the tetrahedran elements
 epsilon_r_final=zeros(Ne,1);
 dielectric_count=0;
 for e=1:Ne
@@ -150,14 +152,16 @@ for e=1:Ne
               epsilon_r_final(e,1)=epsilon_r_air;   
      end     
 end
-
+% Generating Boundary matrices at the input and output port
+% Ref: Appendix C of the reference paper
 [B1ij,B2ij]=obtain_boundary_matrix_input_output_port(four_node_tetrahedron,node_list,edge_element, ...
     sign_edge_element,input_face_surface_element_no,output_face_surface_element_no,No_of_edges, ...
     output_face_surface,input_face_surface,input_normal_vector,output_normal_vector);
 f_mean=obtain_excitation_matrix(No_of_edges,Ne,input_face_surface,edge_element, ...
     input_face_surface_element_no,four_node_tetrahedron,sign_edge_element, ...
     input_normal_vector,node_list,k_z_10,E0,width);
-% finding K_bar
+% Generating the mean stiffness matrix in equation (13) of the reference paper
+% Ref: Appendix C of the reference paper
 [K_mean]=obtain_K_mean_3D_wgd_SSFEM ...
     (mu_r,tet_edge,No_of_edges,n,node_list,epsilon_r_final, ...
     edge_element,sign_edge_element,B1ij,B2ij,k0,gamma_input);
@@ -173,7 +177,7 @@ for ii=1:No_of_rv
     seed_value=ii;
     xi_value(:,ii) = random_number_seed_gaussian(N_SSFEM,seed_value);   
 end
-
+% random field generation as in equation (4) of the reference paper
 eig_vector_centroid=zeros(Ne,No_of_terms_KL);
 for ii=1:No_of_terms_KL
     for e=1:Ne
@@ -210,6 +214,7 @@ for ii=1:No_of_terms_KL
     beta(:,ii)=-k0^2*random_field(:,ii);
 end
 
+% Generating the stochastic matrix as in equation (17)
 for e=1:Ne 
     e
     l1=sqrt((x(n(e,tet_edge(1,1)))-x(n(e,tet_edge(1,2))))^2+ ...
@@ -343,7 +348,7 @@ end
 clear K_matrix
 clear K_i
 
-% generating stochastic matrix
+% generating SSFEM matrix as in equation (24) of the reference paper
 poly_order=1; % change accordingly 
 no_of_hermite_poly=factorial(poly_order+No_of_rv)/ ...
     (factorial(poly_order)*factorial(No_of_rv));
